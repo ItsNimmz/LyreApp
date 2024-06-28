@@ -1,9 +1,9 @@
-import image1 from './image1'
-import image2 from './image2.jpg'
+import image1 from './img1.jpg'
+import image2 from './img2.jpg'
 
 export const assets = {
-    ed,
-    taylor
+    image1,
+    image2
 }
 
 export const albumsData = [
