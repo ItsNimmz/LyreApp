@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import SidebarComponent from './components/SidebarComponent'
 import PlayerComponent from './components/PlayerComponent'
+import Display from './components/Display'
+
 
 
 const App = () => {
@@ -8,6 +10,7 @@ const App = () => {
     <div className='h-screen bg-black'>
         <div className='h-[90%] flex'>
           <SidebarComponent />
+          <Display />
         </div>
         <PlayerComponent />
     </div>
