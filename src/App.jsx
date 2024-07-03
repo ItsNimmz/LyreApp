@@ -1,19 +1,24 @@
 import React, { useContext } from 'react'
-import SidebarComponent from './components/SidebarComponent'
-import PlayerComponent from './components/PlayerComponent'
-import Display from './components/Display'
-
-
+import MainComponent from './components/MainComponent';
+import Login from './components/Login';
+import { useState, useEffect  } from "react";
 
 const App = () => {
+
+  const [token, setToken] = useState(null);
+  useEffect(() => {
+    const currentUrl = window.location.href;
+    const urlObj = new URL(currentUrl);
+    const params = new URLSearchParams(urlObj.search);
+    const code = params.get('code');
+
+    if (code) {
+      setToken(code);
+    }
+  }, []);
+
   return (
-    <div className='h-screen bg-black'>
-        <div className='h-[90%] flex'>
-          <SidebarComponent />
-          <Display />
-        </div>
-        <PlayerComponent />
-    </div>
+     <div>{token ? <MainComponent /> : <Login />}</div>
   )
 }
 
