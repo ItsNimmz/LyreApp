@@ -1,7 +1,7 @@
 import React from 'react'
 
 const client_id = '33923fe14a9d46049601501e59066d27';
-const redirect_uri = 'http://localhost:5174/callback';
+const redirect_uri = 'http://localhost:5173/callback';
 const scope = 'user-library-read user-read-playback-state user-modify-playback-state';
 
 const Login = () => {
