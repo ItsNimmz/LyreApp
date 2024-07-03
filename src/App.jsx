@@ -8,19 +8,19 @@ const App = () => {
 
   // const [token, setToken] = useState(null);
   // useEffect(() => {
-    const { setToken } = useContext(AppContext);
-    
+    const { token, setToken } = useContext(AppContext);
+
     const currentUrl = window.location.href;
     const urlObj = new URL(currentUrl);
     const params = new URLSearchParams(urlObj.search);
-    const token = params.get('code');
+    const code = params.get('code');
 
-    if (token) {
-      setToken(token);
+    if (code && !token) {
+      setToken(code);
     }
   // }, []);
   return (
-     <div>{token ? <MainComponent /> : <Login />}</div>
+     <div>{code ? <MainComponent /> : <Login />}</div>
   )
 }
 
