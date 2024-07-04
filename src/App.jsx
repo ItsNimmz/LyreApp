@@ -9,13 +9,13 @@ const App = () => {
   // const [token, setToken] = useState(null);
   // useEffect(() => {
     const { token, setToken } = useContext(AppContext);
-
+    const tokenLocal = localStorage.getItem('token');
     const currentUrl = window.location.href;
     const urlObj = new URL(currentUrl);
     const params = new URLSearchParams(urlObj.search);
     const code = params.get('code');
 
-    if (code && !token) {
+    if (code && !token && !tokenLocal) {
       setToken(code);
     }
   // }, []);
