@@ -65,6 +65,32 @@ export const fetchNewReleases = async (accessToken) => {
   }
 };
 
+export const fetchFeaturedPlaylists = async (accessToken) => {
+  if (!accessToken) {
+    console.error('Access token is not available');
+    return [];
+  }
+  
+  try {
+    const response = await fetch('https://api.spotify.com/v1/browse/featured-playlists', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok ' + response.statusText);
+    }
+
+    const data = await response.json();
+    return data.playlists.items;
+  } catch (error) {
+    console.error('There was an error!', error);
+    throw error;
+  }
+};
+
 export const fetchSongs = async () => {
   return 'null'
 };
