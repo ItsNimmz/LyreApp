@@ -1,23 +1,62 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import NavBar from './NavBar';
 import { albumsData } from '../assets/assets';
 import Albumlist from './Albumlist';
 import { songsData } from '../assets/assets';
 import SongList from './SongList';
 import { AppContext } from '../context/AppContext';
+import { fetchNewReleases } from '../services/ApiService';
+
 
 const DisplayHome = () => {
   const { accessToken } = useContext(AppContext);
   console.log('accessToken',accessToken)
+  //fetchNewReleases();
+  // const newReleases = fetchNewReleases();
+
+  // init user in dashboard each time
+  const [newReleases, setNewReleases] = useState([]);
+
+  useEffect(() => {
+    const getNewReleases = async () => {
+      if (accessToken) {
+        const releases = await fetchNewReleases(accessToken);
+        setNewReleases(releases);
+      }
+    };
+    getNewReleases();
+  }, [accessToken]);
+
+
+  
   return (
     <>
       <NavBar />
       <div className='mb-4'>
         <h1 className='my-5  font-bold text-2xl'>Featured Charts</h1>
         <div className='flex overflow-auto'>
-        {albumsData.map((item, index) => (
+        {/* {albumsData.map((item, index) => (
           <Albumlist key={index} name={item.name} desc={item.desc} id={item.id} image={item.image} />
-        ))}
+        ))} */}
+{/* 
+        {newReleases.map((item, index) => (
+          <Albumlist key={index} name={item.name} totaltracks={item.totaltracks}  id={item.id} image={item.images} />
+        ))} */}
+
+{newReleases.length > 0 ? (
+            newReleases.map((item, index) => (
+              <Albumlist
+                key={index}
+                name={item.name}
+                totaltracks={item.total_tracks}
+                id={item.id}
+                image={item.images[0]?.url}
+              />
+            ))
+          ) : (
+            <p>Loading...</p>
+          )}
+
         </div>
         
       </div>
@@ -40,5 +79,6 @@ const DisplayHome = () => {
     </>
   );
 };
+
 
 export default DisplayHome;
