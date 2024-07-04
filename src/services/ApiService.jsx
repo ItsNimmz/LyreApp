@@ -37,6 +37,34 @@ export const getAccessToken =  () => {
 };
 
 
+
+export const fetchNewReleases = async (accessToken) => {
+  if (!accessToken) {
+    console.error('Access token is not available');
+    return [];
+  }
+
+  try {
+    const response = await fetch('https://api.spotify.com/v1/browse/new-releases', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    console.log('New Releases:', data.albums.items);
+    return data.albums.items;
+  } catch (error) {
+    console.error('Error fetching new releases:', error);
+    return [];
+  }
+};
+
 export const fetchSongs = async () => {
   return 'null'
 };
