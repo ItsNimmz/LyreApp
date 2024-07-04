@@ -1,11 +1,14 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import NavBar from './NavBar';
 import { albumsData } from '../assets/assets';
 import Albumlist from './Albumlist';
 import { songsData } from '../assets/assets';
 import SongList from './SongList';
+import { AppContext } from '../context/AppContext';
 
 const DisplayHome = () => {
+  const { accessToken } = useContext(AppContext);
+  console.log('accessToken',accessToken)
   return (
     <>
       <NavBar />
