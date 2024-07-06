@@ -1,9 +1,52 @@
-import React from 'react';
-import { MdArrowBack, MdArrowForward } from "react-icons/md";
+import React, {useRef, useState, useCallback} from 'react';
+import { MdArrowBack, MdArrowForward, MdPhotoCamera    } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
+import Webcam from 'react-webcam';
+import Modal from 'react-modal';
+import axios from 'axios';
 
 const NavBar = () => {
+  // Web camera section
+  const [emotion, setEmotion] = useState('');
+  const [isOpened, setIsOpened] = useState(false);
+  const openWebcam = () => {
+    setIsOpened(true);
+  }
   const navigate = useNavigate();
+  const webcamRef = useRef(null);
+
+  const capture = useCallback(() => {
+    if(!webcamRef.current) return;
+
+    const imageSrc = webcamRef.current.getScreenshot();
+    return imageSrc;
+  }, [webcamRef]);
+  
+  const handleCapture = async () => {
+    const imageSrc = capture();
+
+    const base64Response = await fetch(imageSrc);
+    const blob = await base64Response.blob();
+    const formData = new FormData();
+    formData.append('image', blob, 'captured_image.jpg');
+
+    try {
+      const response = await axios.post('http://localhost:5000/detect_emotion', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      setEmotion(response.data.emotions);
+      console.log('------You look so ',response.data.emotions[0],'---------------------------')
+    } catch (error) {
+      console.error('Error detecting emotion:', error);
+      setEmotion('Error detecting emotion');
+    }
+    setIsOpened(false);
+  };
+  const handleCancel = () => {
+    setIsOpened(false);
+  };
   return (
     <>
       <div className='w-full flex justify-between items-center font-semibold'>
@@ -18,6 +61,37 @@ const NavBar = () => {
           />
         </div>
         <div className='flex items-center gap-4'>
+        <div>
+          <MdPhotoCamera size={30} onClick={() => setIsOpened(true)} className="cursor-pointer" />
+          <Modal
+            isOpen={isOpened}
+            onRequestClose={handleCancel}
+            contentLabel="Webcam Modal"
+            className="bg-black p-4 rounded-lg shadow-lg max-w-md mx-auto my-4"
+            overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+          >
+            <Webcam
+              audio={false}
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              className="w-full h-auto"
+            />
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={handleCapture}
+                className="bg-white text-black px-4 py-2 rounded hover:bg-gray-200"
+              >
+                Capture Emotion
+              </button>
+              <button
+                onClick={handleCancel}
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+              >
+                Cancel
+              </button>
+            </div>
+          </Modal>
+        </div>
           <p className='bg-white text-black text-[15px] px-4 py-1 rounded-2xl hidden md:block cursor-pointer'>
             Explore Premium
           </p>
