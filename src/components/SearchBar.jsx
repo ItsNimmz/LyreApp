@@ -10,7 +10,7 @@ const SearchBar = ({ token, addSong }) => {
   const handleSearch = async () => {
     if (query) {
       const tracks = await searchSongs(token, query);
-      setResults(tracks);
+      setResults(tracks.slice(0, 5));
     }
   };
 
