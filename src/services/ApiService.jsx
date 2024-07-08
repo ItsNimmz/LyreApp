@@ -113,6 +113,34 @@ export const fetchSavedTracks = async (accessToken) => {
   }
 };
 
+//Search Songs
+export const searchSongs = async (token, query) => {
+  const response = await axios.get('https://api.spotify.com/v1/search', {
+    headers: { Authorization: `Bearer ${token}` },
+    params: { q: query, type: 'track' }
+  });
+  return response.data.tracks.items;
+};
+
+// Recommendations
+const API_BASE_URL = 'http://localhost:5000';
+export const getRecommendations = async (userId, trackIds) => {
+  const response = await axios.post(`${API_BASE_URL}/recommend`, {
+    user_id: userId,
+    track_ids: trackIds
+  });
+  return response.data;
+};
+
+export const getSpotifyRecommendations = async (token, seedTracks) => {
+  const response = await axios.get('https://api.spotify.com/v1/recommendations', {
+    headers: { Authorization: `Bearer ${token}` },
+    params: { seed_tracks: seedTracks.join(','), limit: 10 }
+  });
+  return response.data.tracks;
+};
+
+
 export const fetchSongs = async () => {
   return 'null'
 };

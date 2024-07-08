@@ -1,34 +1,21 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import NavBar from './NavBar';
-import { albumsData } from '../assets/assets';
 import Albumlist from './Albumlist';
-import { songsData } from '../assets/assets';
-import SongList from './SongList';
-import { AppContext } from '../context/AppContext';
-import { fetchNewReleases } from '../services/ApiService';
-import { fetchFeaturedPlaylists } from '../services/ApiService';
-import { fetchSavedTracks } from '../services/ApiService';
-
-
+import { fetchNewReleases, fetchFeaturedPlaylists, fetchSavedTracks } from '../services/ApiService';
+import SearchBar from './SearchBar';
+import Recommendations from './Recommendations';
+import '../style.css';
 
 const DisplayHome = () => {
-  // const { accessToken } = useContext(AppContext);
-  // console.log('accessToken',accessToken)
   const accessToken = localStorage.getItem('AccessToken');
-  
-  //fetchNewReleases();
-  // const newReleases = fetchNewReleases();
 
-  // init user in dashboard each time
-  const [newReleases, setNewReleases] = useState([]);  //New Releases
+  const [newReleases, setNewReleases] = useState([]);  // New Releases
   const [featuredPlaylists, setFeaturedPlaylists] = useState([]); // Featured Playlists
   const [savedTracks, setSavedTracks] = useState([]); // Saved tracks (Liked songs)
-
- 
+  const [userTracks, setUserTracks] = useState([]); // Tracks added by the user
 
   useEffect(() => {
     const getNewReleases = async () => {
-       
       if (accessToken) {
         const releases = await fetchNewReleases(accessToken);
         setNewReleases(releases);
@@ -52,22 +39,20 @@ const DisplayHome = () => {
     getSavedTracks(); // Fetch saved tracks
   }, [accessToken]);
 
+  const addSong = (trackId) => {
+    setUserTracks([...userTracks, trackId]);
+  };
 
-  
   return (
     <>
       <NavBar />
-      <div className='mb-4'>
-        <h1 className='my-5  font-bold text-2xl'>New Releases</h1>
-        <div className='flex overflow-auto'>
-        {/* {albumsData.map((item, index) => (
-          <Albumlist key={index} name={item.name} desc={item.desc} id={item.id} image={item.image} />
-        ))} */}
-{/* 
-        {newReleases.map((item, index) => (
-          <Albumlist key={index} name={item.name} totaltracks={item.totaltracks}  id={item.id} image={item.images} />
-        ))} */}
+      <div className="search-bar-section mb-4">
+        <SearchBar token={accessToken} addSong={addSong} />
+      </div>
 
+      <div className='mb-4'>
+        <h1 className='my-5 font-bold text-2xl'>New Releases</h1>
+        <div className='flex overflow-auto'>
           {newReleases.length > 0 ? (
             newReleases.map((item, index) => (
               <Albumlist
@@ -85,7 +70,7 @@ const DisplayHome = () => {
       </div>
 
       <div className='mb-4'>
-        <h1 className='my-5 font-bold text-2xl'>Featured Playlists</h1> {/* New section for featured playlists */}
+        <h1 className='my-5 font-bold text-2xl'>Featured Playlists</h1>
         <div className='flex overflow-auto'>
           {featuredPlaylists.length > 0 ? (
             featuredPlaylists.map((playlist, index) => (
@@ -104,7 +89,7 @@ const DisplayHome = () => {
       </div>
 
       <div className='mb-4'>
-        <h1 className='my-5 font-bold text-2xl'>Liked Songs </h1> {/* New section for saved tracks */}
+        <h1 className='my-5 font-bold text-2xl'>Liked Songs </h1>
         <div className='flex overflow-auto'>
           {savedTracks.length > 0 ? (
             savedTracks.map((track, index) => (
@@ -122,25 +107,12 @@ const DisplayHome = () => {
         </div>
       </div>
 
-      {/* <div className='mb-4'>
-        <h1 className='my-5  font-bold text-2xl'>Today's Biggest Hits</h1>
-        <div className='flex overflow-auto'>
-          {songsData.map((item, index) => (
-            <Albumlist 
-              key={index} 
-              name={item.name} 
-              desc={item.desc} 
-              id={item.id} 
-              image={item.image} 
-            />
-          ))}
-        </div>
-
-        
-      </div> */}
+      <div className='mb-4'>
+        <h1 className='my-5 font-bold text-2xl'>Recommended Songs</h1>
+        <Recommendations token={accessToken} userId={'YOUR_USER_ID'} userTracks={userTracks} />
+      </div>
     </>
   );
 };
-
 
 export default DisplayHome;
