@@ -5,7 +5,7 @@ import pandas as pd
 
 app = Flask(__name__)
 
-# Load the trained model (assume you have trained and saved it as 'svd_model.pkl')
+# Load the trained model
 with open('svd_model.pkl', 'rb') as f:
     model = pickle.load(f)
 
