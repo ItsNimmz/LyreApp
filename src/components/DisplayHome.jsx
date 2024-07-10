@@ -13,7 +13,7 @@ const DisplayHome = () => {
   const [featuredPlaylists, setFeaturedPlaylists] = useState([]); // Featured Playlists
   const [savedTracks, setSavedTracks] = useState([]); // Saved tracks (Liked songs)
   const [userTracks, setUserTracks] = useState([]); // Tracks added by the user
-  const [showRecommendations, setShowRecommendations] = useState(false); // Toggle to show/hide recommendations
+  const [showRecommendations, setShowRecommendations] = useState(false); // State for showing recommendations
 
   useEffect(() => {
     const getNewReleases = async () => {
@@ -44,9 +44,6 @@ const DisplayHome = () => {
     setUserTracks([...userTracks, trackId]);
   };
 
-  const toggleRecommendations = () => {
-    setShowRecommendations(!showRecommendations);
-  };
   return (
     <>
       <NavBar />
@@ -54,34 +51,22 @@ const DisplayHome = () => {
         <SearchBar token={accessToken} addSong={addSong} />
       </div>
 
-      {/* New Section: User Added Songs */}
-      <div className='user-tracks-section mb-4'>
-        <h2 className='font-bold text-xl'>Your Added Songs</h2>
-        <div className='flex overflow-auto'>
-          {userTracks.length > 0 ? (
-            userTracks.map((trackId, index) => (
-              <Albumlist
-                key={index}
-                name={item.name}
-                totaltracks={item.total_tracks}
-                id={item.id}
-                image={item.images[0]?.url}
-              />
-            ))
-          ) : (
-            <p>No songs added yet.</p>
-          )}
-        </div>
-        {/* Button to toggle Recommendations */}
-        <button className='toggle-recommendations-button' onClick={toggleRecommendations}>
+      {/* Section to display user-added tracks */}
+      <div className="user-tracks-section mb-4">
+        <h1 className='my-5 font-bold text-2xl'>Your Added Songs</h1>
+        <ul>
+          {userTracks.map((trackId, index) => (
+            <li key={index}>{trackId}</li>
+          ))}
+        </ul>
+        <button onClick={() => setShowRecommendations(!showRecommendations)} className="recommend-button">
           {showRecommendations ? 'Hide Recommendations' : 'Show Recommendations'}
         </button>
       </div>
 
-      {/* Conditional Rendering for Recommendations */}
       {showRecommendations && (
-        <div className='recommended-songs-section mb-4'>
-          <h2 className='font-bold text-xl'>Recommended Songs</h2>
+        <div className='mb-4'>
+          <h1 className='my-5 font-bold text-2xl'>Recommended Songs</h1>
           <Recommendations token={accessToken} userId={'YOUR_USER_ID'} userTracks={userTracks} />
         </div>
       )}
@@ -141,11 +126,6 @@ const DisplayHome = () => {
             <p>Loading Liked Songs...</p>
           )}
         </div>
-      </div>
-
-      <div className='mb-4'>
-        <h1 className='my-5 font-bold text-2xl'>Recommended Songs</h1>
-        <Recommendations token={accessToken} userId={'YOUR_USER_ID'} userTracks={userTracks} />
       </div>
     </>
   );

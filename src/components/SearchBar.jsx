@@ -1,4 +1,3 @@
-// src/components/SearchBar.jsx
 import React, { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { searchSongs } from '../services/ApiService';
@@ -10,6 +9,7 @@ const SearchBar = ({ token, addSong }) => {
   const handleSearch = async () => {
     if (query) {
       const tracks = await searchSongs(token, query);
+      // Limit to top 5 results
       setResults(tracks.slice(0, 5));
     }
   };
