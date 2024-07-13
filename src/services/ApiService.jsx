@@ -1,4 +1,3 @@
-// src/services/api.js
 
 import axios from 'axios';
 import { AppContext } from '../context/AppContext';
@@ -140,6 +139,14 @@ export const getSpotifyRecommendations = async (token, seedTracks) => {
   return response.data.tracks;
 };
 
+export const fetchTrackDetails = async (token, trackId) => {
+  const response = await axios.get(`https://api.spotify.com/v1/tracks/${trackId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
 
 export const fetchSongs = async () => {
   return 'null'

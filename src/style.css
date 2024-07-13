@@ -69,3 +69,16 @@
     background-color: #1ed760;
   }
   
+  .recommend-button {
+    background-color: #1db954;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .recommend-button:hover {
+    background-color: #1ed760;
+  }

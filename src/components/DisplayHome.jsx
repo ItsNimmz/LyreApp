@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import NavBar from './NavBar';
 import Albumlist from './Albumlist';
-import { fetchNewReleases, fetchFeaturedPlaylists, fetchSavedTracks } from '../services/ApiService';
+import { fetchNewReleases, fetchFeaturedPlaylists, fetchSavedTracks, fetchTrackDetails } from '../services/ApiService';
 import SearchBar from './SearchBar';
 import Recommendations from './Recommendations';
 import '../style.css';
@@ -40,8 +40,11 @@ const DisplayHome = () => {
     getSavedTracks(); // Fetch saved tracks
   }, [accessToken]);
 
-  const addSong = (trackId) => {
-    setUserTracks([...userTracks, trackId]);
+  const addSong = async (trackId) => {
+    if (accessToken) {
+      const trackDetails = await fetchTrackDetails(accessToken, trackId);
+      setUserTracks([...userTracks, trackDetails]);
+    }
   };
 
   return (
@@ -55,8 +58,8 @@ const DisplayHome = () => {
       <div className="user-tracks-section mb-4">
         <h1 className='my-5 font-bold text-2xl'>Your Added Songs</h1>
         <ul>
-          {userTracks.map((trackId, index) => (
-            <li key={index}>{trackId}</li>
+          {userTracks.map((track, index) => (
+            <li key={index}>{track.name} by {track.artists.map((artist) => artist.name).join(', ')}</li>
           ))}
         </ul>
         <button onClick={() => setShowRecommendations(!showRecommendations)} className="recommend-button">

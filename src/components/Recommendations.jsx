@@ -1,6 +1,7 @@
 // src/components/Recommendations.jsx
 import React, { useState } from 'react';
 import { getRecommendations, getSpotifyRecommendations } from '../services/ApiService';
+import '../style.css';
 const Recommendations = ({ token, userId, userTracks }) => {
   // State hook to store recommendations
   const [recommendations, setRecommendations] = useState([]);
@@ -18,7 +19,7 @@ const Recommendations = ({ token, userId, userTracks }) => {
 
   return (
     <div>
-      <button onClick={fetchRecommendations}>Get Recommendations</button>
+      <button onClick={fetchRecommendations} className="recommend-button">Get Recommendations</button>
       <ul>
         {recommendations.map((track) => (
           <li key={track.id}>
