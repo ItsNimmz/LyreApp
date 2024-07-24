@@ -24,7 +24,7 @@ const Login = () => {
 }
 
   return (
-    <div className='h-screen bg-custom-gradient h-screen'>
+    <div className='bg-custom-gradient h-screen'>
         <div className='w-[100%] flex flex-col items-center justify-center gap-[5rem] pt-[10%]'>
             <img className='h-[10vh] md:h-[20vh]'
                 src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_White.png"
