@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Song Recommender</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .message {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Song Recommender</h1>
+    <form method="post">
+        <div class="form-group">
+            <label for="song_name">Song Name</label>
+            <input type="text" id="song_name" name="song_name" required>
+        </div>
+        <div class="form-group">
+            <label for="artist_name">Artist Name (optional)</label>
+            <input type="text" id="artist_name" name="artist_name">
+        </div>
+        <div class="form-group">
+            <label for="num_songs_to_output">Number of Songs to Output</label>
+            <input type="number" id="num_songs_to_output" name="num_songs_to_output" value="5" min="1" required>
+        </div>
+        <div class="form-group">
+            <label for="scaler_choice">Select Scaler</label>
+            <select id="scaler_choice" name="scaler_choice" required>
+                <option value="Standard Scaler">Standard Scaler</option>
+                <option value="MinMax Scaler">MinMax Scaler</option>
+            </select>
+        </div>
+        {% for feature in features %}
+        <div class="form-group">
+            <label for="weight_{{ feature }}">Weight for {{ feature }}</label>
+            <input type="number" step="0.01" id="weight_{{ feature }}" name="weight_{{ feature }}" value="0.1" min="0" max="1" required>
+        </div>
+        {% endfor %}
+        <button type="submit">Get Recommendations</button>
+    </form>
+
+    {% if message %}
+    <p class="message">{{ message }}</p>
+    {% endif %}
+
+    {% if recommendations %}
+    <table>
+        <thead>
+            <tr>
+                <th>Song Name</th>
+                <th>Artists</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for song in recommendations %}
+            <tr>
+                <td>{{ song.name }}</td>
+                <td>{{ song.artists }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</body>
+</html>
