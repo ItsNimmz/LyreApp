@@ -115,6 +115,10 @@ const NavBar = () => {
       console.error('Failed to save genres');
     }
   };
+
+  const handleAccInfoCancel = () =>{
+    setshowAccInfo(false)
+  }
   return (
     <>
       <div className='w-full flex justify-between items-center font-semibold'>
@@ -221,7 +225,7 @@ const NavBar = () => {
           </button>
           <button
             className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-            onClick={handleCancel}
+            onClick={handleAccInfoCancel}
           >
             Close
           </button>
