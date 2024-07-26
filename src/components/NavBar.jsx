@@ -111,13 +111,15 @@ const NavBar = () => {
     if (response.ok) {
       console.log('Genres saved successfully');
       setshowAccInfo(false)
+      setIsOpen(false);
     } else {
       console.error('Failed to save genres');
     }
   };
 
   const handleAccInfoCancel = () =>{
-    setshowAccInfo(false)
+    setshowAccInfo(false);
+    setIsOpen(false);
   }
   return (
     <>
