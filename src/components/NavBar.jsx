@@ -209,7 +209,7 @@ const NavBar = () => {
           {genres.map((genre, index) => (
                 <li
                   key={index}
-                  className={`cursor-pointer ${selectedGenres.includes(genre) ? 'text-green-500' : 'text-gray-700'}`}
+                  className={`cursor-pointer ${selectedGenres.includes(genre) ? 'text-green-500' : 'text-yellow-100'}`}
                   onClick={() => handleGenreClick(genre)}
                 >
                   {genre}
