@@ -7,7 +7,7 @@ import SongList from './SongList';
 import { AppContext } from '../context/AppContext';
 import { fetchNewReleases } from '../services/ApiService';
 import { fetchFeaturedPlaylists } from '../services/ApiService';
-import { fetchSavedTracks } from '../services/ApiService';
+import { fetchSavedTracks, fetchUserProfile } from '../services/ApiService';
 
 
 
@@ -43,6 +43,7 @@ const DisplayHome = () => {
     const getSavedTracks = async () => {
       if (accessToken) {
         const tracks = await fetchSavedTracks(accessToken);
+        await fetchUserProfile(accessToken);
         setSavedTracks(tracks);
       }
     };

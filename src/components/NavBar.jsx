@@ -1,4 +1,4 @@
-import React, {useRef, useState, useCallback} from 'react';
+import React, {useRef, useState, useCallback, useEffect} from 'react';
 import { MdArrowBack, MdArrowForward, MdPhotoCamera    } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
 import Webcam from 'react-webcam';
@@ -6,6 +6,13 @@ import Modal from 'react-modal';
 import axios from 'axios';
 
 const NavBar = () => {
+
+  //profile scrion
+  const [isOpen, setIsOpen] = useState(false);
+  const [showAccInfo, setshowAccInfo] = useState(false);
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
   // Web camera section
   const [emotion, setEmotion] = useState('');
   const [isOpened, setIsOpened] = useState(false);
@@ -21,7 +28,7 @@ const NavBar = () => {
     const imageSrc = webcamRef.current.getScreenshot();
     return imageSrc;
   }, [webcamRef]);
-  
+
   const handleCapture = async () => {
     const imageSrc = capture();
 
@@ -31,7 +38,7 @@ const NavBar = () => {
     formData.append('image', blob, 'captured_image.jpg');
 
     try {
-      const response = await axios.post('http://localhost:5000/detect_emotion', formData, {
+      const response = await axios.post('https://cap2-emotion-detection-1.onrender.com/detect_emotion', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -46,6 +53,67 @@ const NavBar = () => {
   };
   const handleCancel = () => {
     setIsOpened(false);
+  };
+  const handleLogout = () => {
+    localStorage.clear();
+        window.location.href = "/";
+  }
+  const showAccInfoFn = () => {
+    setshowAccInfo(true)
+  }
+  const profileName = localStorage.getItem('profile');
+  const genres = [ 'Pop', 'Rock', 'Jazz', 'Hip Hop', 'Classical', 'R&B', 'Country', 'Reggae', 'Blues', 'Electronic', 
+    'Folk', 'Latin', 'Metal', 'Soul', 'Punk', 'Funk', 'Disco', 'Gospel', 'House', 'Techno', 
+    'Trance', 'K-Pop', 'Ska', 'Dubstep', 'Ambient', 'Grunge', 'Indie', 'Swing', 'Bluegrass', 'Opera'];
+  const [selectedGenres, setSelectedGenres] = useState([]);
+
+  useEffect(() => {
+    const fetchGenres = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/get-genres/${profileName}`);
+        if (response.ok) {
+          const data = await response.json();
+          setSelectedGenres(data.genres || []);
+        } else {
+          console.error('Failed to fetch genres');
+        }
+      } catch (error) {
+        console.error('Error fetching genres:', error);
+      }
+    };
+
+    if (showAccInfo) {
+      fetchGenres();
+    }
+  }, [showAccInfo, profileName]);
+  
+  const handleGenreClick = (genre) => {
+    setSelectedGenres((prev) => {
+      if (prev.includes(genre)) {
+        return prev.filter((g) => g !== genre);
+      } else {
+        return [...prev, genre];
+      }
+    });
+  };
+
+
+
+  ///////////////for saving genre
+  const saveGenres = async () => {
+    const response = await fetch('http://127.0.0.1:5000/save-genres', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username: profileName, genres: selectedGenres }),
+    });
+    if (response.ok) {
+      console.log('Genres saved successfully');
+      setshowAccInfo(false)
+    } else {
+      console.error('Failed to save genres');
+    }
   };
   return (
     <>
@@ -98,16 +166,68 @@ const NavBar = () => {
           <p className='bg-black py-1 px-3 rounded-2xl text-[15px] cursor-pointer'>
             Install App
           </p>
-          <p className='bg-purple-500 text-black w-7 h-7 rounded-full flex items-center justify-center'>
+          <p className='bg-purple-500 text-black w-7 h-7 rounded-full flex items-center justify-center cursor-pointer' onClick={toggleDropdown}>
             A
           </p>
-        </div>
+          {isOpen && (
+              <div className="profile-menu absolute right-0 mt-20">
+              <ul className="p-2 bg-white text-black rounded-md shadow-lg cursor-pointer">
+                <li onClick={showAccInfoFn}>Account Information</li>
+                <li onClick={handleLogout}>Logout</li>  
+              </ul>
+            </div>
+          )}
+            </div>
       </div>
       <div className='flex items-center gap-2 mt-4'>
         <p className='bg-white text-black px-4 py-1 rounded-2xl cursor-pointer'>All</p>
         <p className='bg-black px-4 py-1 rounded-2xl cursor-pointer'>Music</p>
         <p className='bg-black px-4 py-1 rounded-2xl cursor-pointer'>Podcast</p>
       </div>
+      <Modal
+        isOpen={showAccInfo}
+        onRequestClose={handleCancel}
+        contentLabel="account info Modal"
+        className="bg-black p-6 rounded-lg shadow-lg max-w-2xl mx-auto my-8"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center"
+      >
+        <div className='text-white'>
+        <h2 className="text-lg font-semibold mb-6">User Details</h2>
+      <div className="space-y-4">
+        <div className="border-b pb-2">
+          <p className="text-lg font-medium">Username:<strong> {profileName}</strong></p>
+        </div>
+        <div>
+          <p className="text-lg font-medium"><strong>Genres:</strong></p>
+          <ul className="grid grid-cols-5 gap-4 mt-2">
+          {genres.map((genre, index) => (
+                <li
+                  key={index}
+                  className={`cursor-pointer ${selectedGenres.includes(genre) ? 'text-green-500' : 'text-gray-700'}`}
+                  onClick={() => handleGenreClick(genre)}
+                >
+                  {genre}
+                </li>
+              ))}
+          </ul>
+        </div>
+      </div>
+      <div className="flex justify-center mt-6 space-x-4">
+      <button
+            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+            onClick={saveGenres}
+          >
+            Save
+          </button>
+          <button
+            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+            onClick={handleCancel}
+          >
+            Close
+          </button>
+        </div>
+        </div>
+      </Modal>
     </>
   );
 };
