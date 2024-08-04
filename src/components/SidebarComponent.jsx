@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MdHomeFilled, MdSearch, MdLayers,MdArrowForward, MdAdd   } from "react-icons/md";
-import { fetchSearchResult, fetchPlaylist } from '../services/ApiService';
+import { fetchSearchResult, fetchPlaylist, fetchPlaylistTracks } from '../services/ApiService';
 
 import Modal from 'react-modal';
 const SidebarComponent  = () => {
@@ -10,6 +10,8 @@ const SidebarComponent  = () => {
   const [searchResult, setSearchResult] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [playlists, setPlaylist] = useState([]);
+  const [tracks, setTracks] = useState([]);
+  const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const searchRef = useRef(null);
 
   useEffect(() => {
@@ -35,6 +37,7 @@ const SidebarComponent  = () => {
     }
   };
   const searchInSpotify = async() =>{
+    setSelectedPlaylist(null);
     const query =  searchQuery.trim();
     if (accessToken) {
       const searchResult = await fetchSearchResult(accessToken, query);
@@ -45,6 +48,13 @@ const SidebarComponent  = () => {
     }
   }
   
+  const handlePlaylistClick = async (playlistId) => {
+    setSelectedPlaylist(playlistId);
+    const playlistTracks = await fetchPlaylistTracks(accessToken, playlistId);
+    console.log('heyyyyyyyyyyyy',playlistTracks[0].track)
+    setTracks(playlistTracks);
+    setModalIsOpen(true);
+  };
 
   return (
     <div className='w-[25%] h-full p-2 flex-col gap-2 text-white hidden lg:flex'>
@@ -108,7 +118,8 @@ const SidebarComponent  = () => {
               <div className='playlist-list flex flex-col gap-3 mt-4 max-h-80 overflow-y-auto'>
             {playlists.length > 0 ? (
               playlists.map(playlist => (
-                <div key={playlist.id} className="playlist-item flex items-center gap-4 p-2 bg-[#333] rounded w-full">
+                <div key={playlist.id} className="playlist-item flex items-center gap-4 p-2 bg-[#333] rounded w-full cursor-pointer"
+                onClick={() => handlePlaylistClick(playlist.id)}>
                   <div className="playlist-image w-16 h-16 overflow-hidden rounded">
                     <img
                       src={playlist.images ? playlist.images[0]?.url : '/playlist.png'}
@@ -127,14 +138,35 @@ const SidebarComponent  = () => {
           </div>
         </div>
       </div>
-          <Modal
-            isOpen={modalIsOpen}
-            onRequestClose={() => setModalIsOpen(false)}
-            contentLabel="Search Modal"
-            className="bg-black p-6 rounded-lg shadow-lg max-w-4xl mx-auto my-8 w-[30%]"
-            overlayClassName="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center"
-          >
-            <div className="text-white text-center">
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={() => {
+          setModalIsOpen(false);
+          setSearchQuery('');
+          setTracks([]);
+        }}
+        contentLabel={selectedPlaylist ? "Playlist Tracks" : "Search Modal"}
+        className="bg-black p-6 rounded-lg shadow-lg max-w-4xl mx-auto my-8 w-[30%] "
+        overlayClassName="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center"
+      >
+        <div className="text-white text-center max-h-[60vh] overflow-y-auto ">
+          {selectedPlaylist ? (
+            <>
+              <h2 className="text-lg font-semibold mb-6 text-center">Tracks in Playlist</h2>
+              <ul>
+                {tracks.map((track) => (
+                  <li key={track.id} className="mb-4 flex gap-4">
+                    <img src={track.track.album.images[0].url} alt={track.name} className="w-16 h-16 object-cover rounded" />
+                    <div>
+                      <p className="font-semibold text-start">{track.name}</p>
+                      <p className="text-sm text-gray-400 text-start">{track.track.artists.map(artist => artist.name).join(', ')}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <>
               <h2 className="text-lg font-semibold mb-6 text-center">Search Results</h2>
               <ul>
                 {searchResult.map((track) => (
@@ -147,18 +179,20 @@ const SidebarComponent  = () => {
                   </li>
                 ))}
               </ul>
-              <button
-                className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 text-center"
-                onClick={() => {
-                  setModalIsOpen(false);
-                  setSearchActive(false);
-                  setSearchQuery('');
-                }}
-              >
-                Close
-              </button>
-            </div>
-          </Modal>
+            </>
+          )}
+          <button
+            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 text-center"
+            onClick={() => {
+              setModalIsOpen(false);
+              setSearchQuery('');
+              setTracks([]);
+            }}
+          >
+            Close
+          </button>
+        </div>
+      </Modal>
     </div>
   )
 }

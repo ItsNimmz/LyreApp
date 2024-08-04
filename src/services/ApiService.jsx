@@ -207,3 +207,26 @@ export const fetchPlaylist = async (accessToken) => {
     throw error;
   }
 };
+
+
+//User's playlist tracks
+export const fetchPlaylistTracks = async (accessToken, playlistId) => {
+  try {
+    const response = await fetch('https://api.spotify.com/v1/playlists/'+playlistId+'/tracks?limit=50&offset=0', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok ' + response.statusText);
+    }
+
+    const data = await response.json();
+    return data.items;
+  } catch (error) {
+    console.error('There was an error!', error);
+    throw error;
+  }
+};
