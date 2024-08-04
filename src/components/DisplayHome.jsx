@@ -7,7 +7,7 @@ import SongList from './SongList';
 import { AppContext } from '../context/AppContext';
 import { fetchNewReleases } from '../services/ApiService';
 import { fetchFeaturedPlaylists } from '../services/ApiService';
-import { fetchSavedTracks, fetchUserProfile } from '../services/ApiService';
+import { fetchSavedTracks, fetchUserProfile, fetchRecentTracks } from '../services/ApiService';
 
 
 
@@ -23,6 +23,7 @@ const DisplayHome = () => {
   const [newReleases, setNewReleases] = useState([]);  //New Releases
   const [featuredPlaylists, setFeaturedPlaylists] = useState([]); // Featured Playlists
   const [savedTracks, setSavedTracks] = useState([]); // Saved tracks (Liked songs)
+  const [recentTracks, setRecentTracks] = useState([]); // Recent tracks 
 
  
 
@@ -47,10 +48,17 @@ const DisplayHome = () => {
         setSavedTracks(tracks);
       }
     };
+    const getRecentTracks = async () => {
+      if (accessToken) {
+        const tracks = await fetchRecentTracks(accessToken);
+        setRecentTracks(tracks);
+      }
+    };
 
     getNewReleases(); // Fetch new releases
     getFeaturedPlaylists(); // Fetch featured playlists
     getSavedTracks(); // Fetch saved tracks
+    getRecentTracks();
   }, [accessToken]);
 
 
@@ -100,6 +108,25 @@ const DisplayHome = () => {
             ))
           ) : (
             <p>Loading User's Featured Playlists......</p>
+          )}
+        </div>
+      </div>
+
+      <div className='mb-4'>
+        <h1 className='my-5 font-bold text-2xl'>Recently Played </h1> {/* New section for recently played tracks */}
+        <div className='flex overflow-auto'>
+          {recentTracks.length > 0 ? (
+            recentTracks.map((track, index) => (
+              <Albumlist
+                key={index}
+                name={track.track.name}
+                totaltracks={track.track.album.total_tracks}
+                id={track.track.id}
+                image={track.track.album.images[0]?.url}
+              />
+            ))
+          ) : (
+            <p>Loading Liked Songs...</p>
           )}
         </div>
       </div>
