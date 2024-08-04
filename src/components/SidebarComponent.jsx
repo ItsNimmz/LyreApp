@@ -149,7 +149,7 @@ const SidebarComponent  = () => {
         className="bg-black p-6 rounded-lg shadow-lg max-w-4xl mx-auto my-8 w-[30%] "
         overlayClassName="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center"
       >
-        <div className="text-white text-center max-h-[60vh] overflow-y-auto ">
+        <div className="text-white text-center max-h-[65vh] overflow-y-auto ">
           {selectedPlaylist ? (
             <>
               <h2 className="text-lg font-semibold mb-6 text-center">Tracks in Playlist</h2>
