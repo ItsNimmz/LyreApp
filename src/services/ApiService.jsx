@@ -139,3 +139,23 @@ export const fetchUserProfile = async (accessToken) => {
   }
 };
 
+
+export const fetchSearchResult = async (accessToken,query) => {
+  try {
+    const response = await fetch('https://api.spotify.com/v1/search?q='+query+'&type=track&limit=5&offset=0', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+    if (!response.ok) {
+      throw new Error('Network response was not ok ' + response.statusText);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('There was an error!', error);
+    throw error;
+  }
+};
