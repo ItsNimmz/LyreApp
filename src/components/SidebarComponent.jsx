@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MdHomeFilled, MdSearch, MdLayers,MdArrowForward, MdAdd   } from "react-icons/md";
-import { fetchSearchResult } from '../services/ApiService';
+import { fetchSearchResult, fetchPlaylist } from '../services/ApiService';
 
 import Modal from 'react-modal';
 const SidebarComponent  = () => {
@@ -9,8 +9,17 @@ const SidebarComponent  = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResult, setSearchResult] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [searchFilter, setSearchFilter] = useState('track');
+  const [playlists, setPlaylist] = useState([]);
   const searchRef = useRef(null);
+
+  useEffect(() => {
+    const fetchPlaylists = async() => {
+      const trackData = await fetchPlaylist(accessToken);
+      setPlaylist(trackData);
+    };
+
+    fetchPlaylists();
+  }, []); // Empty dependency array means this runs once when the component mounts
 
   const handleSearchClick = () => {
     if (searchActive && searchQuery.trim() !== '') {
@@ -30,7 +39,6 @@ const SidebarComponent  = () => {
     if (accessToken) {
       const searchResult = await fetchSearchResult(accessToken, query);
       if(searchResult){
-        console.log('heyyyyyyyyy',searchResult.tracks.items)
         setSearchResult(searchResult.tracks.items)
         setModalIsOpen(true);
       }
@@ -95,12 +103,30 @@ const SidebarComponent  = () => {
               <p className='font-light'>It's easy we will help you</p>
               <button className='px-4 py-1.5 bg-white text-[15px] text-black rounded-full mt-4'>Create Playlist</button>
             </div>
-            <div className='p-4 bg-[#242424] m-2 rounded font-semibold flex flex-col items-start justify-start gap-1 pl-4 mt-4'>
-              <h1>Let's find some podcast to follow</h1>
-              <p className='font-light'>We will keep ypu update on new episodes</p>
-              <button className='px-4 py-1.5 bg-white text-[15px] text-black rounded-full mt-4'>Brows Podcast</button>
-            </div>
+            <div className='p-4 bg-[#242424] m-2 rounded font-semibold  items-start justify-start gap-1 pl-4 mt-4'>
+              <h1>Your Playlists</h1>
+              <div className='playlist-list flex flex-col gap-3 mt-4 max-h-80 overflow-y-auto'>
+            {playlists.length > 0 ? (
+              playlists.map(playlist => (
+                <div key={playlist.id} className="playlist-item flex items-center gap-4 p-2 bg-[#333] rounded w-full">
+                  <div className="playlist-image w-16 h-16 overflow-hidden rounded">
+                    <img
+                      src={playlist.images ? playlist.images[0]?.url : '/playlist.png'}
+                      alt={playlist.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="playlist-info flex-1">
+                    <h3 className="text-white font-medium">{playlist.name}</h3>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-white">No playlists available</p>
+            )}
           </div>
+        </div>
+      </div>
           <Modal
             isOpen={modalIsOpen}
             onRequestClose={() => setModalIsOpen(false)}

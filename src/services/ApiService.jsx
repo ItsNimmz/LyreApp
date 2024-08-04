@@ -132,6 +132,7 @@ export const fetchUserProfile = async (accessToken) => {
 
     const data = await response.json();
     localStorage.setItem('profile', data.display_name);
+    localStorage.setItem('profileId', data.id);
     return data.display_name;
   } catch (error) {
     console.error('There was an error!', error);
@@ -165,6 +166,30 @@ export const fetchSearchResult = async (accessToken,query) => {
 export const fetchRecentTracks = async (accessToken) => {
   try {
     const response = await fetch('https://api.spotify.com/v1/me/player/recently-played?limit=20', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok ' + response.statusText);
+    }
+
+    const data = await response.json();
+    return data.items;
+  } catch (error) {
+    console.error('There was an error!', error);
+    throw error;
+  }
+};
+
+
+//User's playlist
+export const fetchPlaylist = async (accessToken) => {
+  const profileId = localStorage.getItem('profileId');
+  try {
+    const response = await fetch('https://api.spotify.com/v1/users/'+profileId+'/playlists?limit=50&offset=0', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`
