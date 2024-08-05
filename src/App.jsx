@@ -31,11 +31,11 @@ const App = () => {
     }
   // }, []);
   return (
-    //  <div>{code ? <MainComponent /> : <Login />}</div>
-     <Routes>
-        <Route path='/callback?' element={<Login />}/>
-        <Route path='/callback?code=' element={<MainComponent />}/>
-      </Routes>
+     <div>{code ? <MainComponent /> : <Login />}</div>
+    //  <Routes>
+    //     <Route path='/callback?' element={<Login />}/>
+    //     <Route path='/callback?code=' element={<MainComponent />}/>
+    //   </Routes>
   )
 }
 
