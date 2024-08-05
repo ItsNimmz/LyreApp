@@ -15,7 +15,7 @@ export const getAccessToken =  () => {
 
     const postData = {
       grant_type: 'authorization_code',
-      code: localStorage.getItem('token'),
+      code: token,
       redirect_uri: REDIRECT_URI,
       client_id: CLIENT_ID,
       client_secret: CLIENT_SECRET,
