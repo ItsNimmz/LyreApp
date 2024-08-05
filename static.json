@@ -1,0 +1,13 @@
+{
+    "routes": [
+      {
+        "source": "/callback",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/(.*)",
+        "destination": "/index.html"
+      }
+    ]
+  }
+  
