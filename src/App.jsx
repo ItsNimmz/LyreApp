@@ -34,7 +34,7 @@ const App = () => {
     //  <div>{code ? <MainComponent /> : <Login />}</div>
      <Routes>
         <Route path='/callback?' element={<Login />}/>
-        <Route path='/' element={<MainComponent />}/>
+        <Route path='/callback?code=' element={<MainComponent />}/>
       </Routes>
   )
 }
