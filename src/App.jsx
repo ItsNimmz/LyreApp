@@ -15,8 +15,9 @@ const App = () => {
     const urlObj = new URL(currentUrl);
     // const params = new URLSearchParams(urlObj.search);
     // const code_1 = params.get('code');
-
-    const params = new URLSearchParams(hash.replace('#', '?'));
+    const hash = currentUrl.split('#')[1];
+    const params = new URLSearchParams(hash);
+    // const params = new URLSearchParams(hash.replace('#', '?'));
     const code_1 = params.get('access_token');
     if (code_1) {
       console.log('jhgfdsdfghjf')
