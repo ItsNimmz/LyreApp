@@ -38,7 +38,7 @@ const NavBar = () => {
     formData.append('image', blob, 'captured_image.jpg');
 
     try {
-      const response = await axios.post('https://cap2-emotion-detection-1.onrender.com/detect_emotion', formData, {
+      const response = await axios.post('https://cap2-emotion-detection1.onrender.com/detect_emotion', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

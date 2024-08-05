@@ -5,7 +5,7 @@ import DisplayHome from './DisplayHome'
 // import { albumsData } from '../assets/assets'
 
 const Display = () => {
-
+    console.log('in Display component')
      const displayRef = React.useRef();
     // const location =useLocation();
     // // console.log(location);
