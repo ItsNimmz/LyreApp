@@ -14,6 +14,7 @@ const scope = [
   "user-read-playback-position",
   "user-top-read",
   "playlist-read-private",
+  "user-library-read"
 ];
 
 const Login = () => {
