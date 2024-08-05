@@ -5,7 +5,7 @@ import { useState, useEffect  } from "react";
 import { AppContext } from './context/AppContext';
 
 const App = () => {
-
+  console.log('in app component')
   // const [token, setToken] = useState(null);
   // useEffect(() => {
     const { token, setToken } = useContext(AppContext);
