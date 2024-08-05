@@ -13,8 +13,11 @@ const App = () => {
     const redirected = localStorage.getItem('redirected');
     const currentUrl = window.location.href;
     const urlObj = new URL(currentUrl);
-    const params = new URLSearchParams(urlObj.search);
-    const code_1 = params.get('code');
+    // const params = new URLSearchParams(urlObj.search);
+    // const code_1 = params.get('code');
+
+    const params = new URLSearchParams(hash.replace('#', '?'));
+    const code_1 = params.get('access_token');
     if (code_1) {
       console.log('jhgfdsdfghjf')
       localStorage.setItem('code', code_1);
