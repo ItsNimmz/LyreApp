@@ -1,7 +1,7 @@
 import React from 'react'
 
 const clientId = '33923fe14a9d46049601501e59066d27';
-const redirectUrl = 'https://lyreapp.onrender.com/';
+const redirectUrl = 'http://lyreapp.onrender.com/';
 // const scope = 'user-library-read user-read-playback-state user-modify-playback-state user-read-recently-played';
 const apiUrl = 'https://accounts.spotify.com/authorize'
 const scope = [

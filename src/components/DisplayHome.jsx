@@ -14,7 +14,7 @@ import { fetchSavedTracks, fetchUserProfile, fetchRecentTracks } from '../servic
 const DisplayHome = () => {
   // const { accessToken } = useContext(AppContext);
   // console.log('accessToken',accessToken)
-  const accessToken = localStorage.getItem('AccessToken');
+  const accessToken = localStorage.getItem('token');
   
   //fetchNewReleases();
   // const newReleases = fetchNewReleases();
