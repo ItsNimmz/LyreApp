@@ -6,7 +6,7 @@ import { useContext, useState } from "react";
 
 const CLIENT_ID = '33923fe14a9d46049601501e59066d27';
 const CLIENT_SECRET = '52f295db11274f6db62ef7585d7e1cd1';
-const REDIRECT_URI = 'http://localhost:5173/';
+const REDIRECT_URI = 'https://lyreapp.onrender.com/';
 const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token';
 
 // Example API call: Fetch user data
