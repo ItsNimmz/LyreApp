@@ -1,15 +1,29 @@
 import React from 'react'
 
-const client_id = '33923fe14a9d46049601501e59066d27';
-const redirect_uri = 'https://lyreapp.onrender.com/';
-const scope = 'user-library-read user-read-playback-state user-modify-playback-state user-read-recently-played';
+const clientId = '33923fe14a9d46049601501e59066d27';
+const redirectUrl = 'https://lyreapp.onrender.com/';
+// const scope = 'user-library-read user-read-playback-state user-modify-playback-state user-read-recently-played';
+const apiUrl = 'https://accounts.spotify.com/authorize'
+const scope = [
+  "user-read-email",
+  "user-read-private",
+  "user-modify-playback-state",
+  "user-read-playback-state",
+  "user-read-currently-playing",
+  "user-read-recently-played",
+  "user-read-playback-position",
+  "user-top-read",
+  "playlist-read-private",
+];
 
 const Login = () => {
   
   const loginToSpotify = () => {
     const state = generateRandomString(16);
-    const authorizationUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${client_id}&scope=${encodeURIComponent(scope)}&redirect_uri=${encodeURIComponent(redirect_uri)}&state=${state}`;
-    
+    // const authorizationUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${client_id}&scope=${encodeURIComponent(scope)}&redirect_uri=${encodeURIComponent(redirect_uri)}&state=${state}`;
+    window.location.href = `${apiUrl}?client_id=${clientId}&redirect_uri=${redirectUrl}&scope=${scope.join(
+      " "
+    )}&response_type=token&show_dialog=true`;
     // Redirect to the Spotify authorization page
     window.location.href = authorizationUrl;
   }
