@@ -10,11 +10,13 @@ const AppContextProvider = (props) => {
 
     // Function to set the token
     const setAuthToken = (newToken) => {
-        localStorage.setItem('token', newToken);
+        console.log('setting token')
+        localStorage.setItem('AccessToken', newToken);
         setToken(newToken);
     };
 
     const setAuthAccessToken = (newToken) => {
+        console.log('setting Access token')
         localStorage.setItem('AccessToken', newToken);
         setAccessToken(newToken);
     };

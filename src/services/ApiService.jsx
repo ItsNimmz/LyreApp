@@ -6,13 +6,12 @@ import { useContext, useState } from "react";
 
 const CLIENT_ID = '33923fe14a9d46049601501e59066d27';
 const CLIENT_SECRET = '52f295db11274f6db62ef7585d7e1cd1';
-const REDIRECT_URI = 'http://localhost:5173/callback';
+const REDIRECT_URI = 'http://localhost:5173/';
 const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token';
 
 // Example API call: Fetch user data
 export const getAccessToken =  () => {
     const {token, accessToken, setAccessToken } = useContext(AppContext);
-
     const postData = {
       grant_type: 'authorization_code',
       code: token,

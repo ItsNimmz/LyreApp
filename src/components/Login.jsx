@@ -1,17 +1,20 @@
 import React from 'react'
 
-const client_id = '33923fe14a9d46049601501e59066d27';
-const redirect_uri = 'https://lyreapp-fd91.onrender.com/callback';
+const clientId = '33923fe14a9d46049601501e59066d27';
+const redirectUrl = 'http://localhost:5173/';
 const scope = 'user-library-read user-read-playback-state user-modify-playback-state user-read-recently-played';
+const apiUrl = 'https://accounts.spotify.com/authorize'
 
 const Login = () => {
   
   const loginToSpotify = () => {
     const state = generateRandomString(16);
-    const authorizationUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${client_id}&scope=${encodeURIComponent(scope)}&redirect_uri=${encodeURIComponent(redirect_uri)}&state=${state}`;
+    // const authorizationUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${client_id}&scope=${encodeURIComponent(scope)}&redirect_uri=${encodeURIComponent(redirect_uri)}&state=${state}`;
     
-    // Redirect to the Spotify authorization page
-    window.location.href = authorizationUrl;
+    // // Redirect to the Spotify authorization page
+    // window.location.href = authorizationUrl;
+
+    window.location.href = `${apiUrl}?client_id=${clientId}&redirect_uri=${redirectUrl}&scope=${encodeURIComponent(scope)}&response_type=token&show_dialog=true`;
   }
 
   const generateRandomString = (length) => {
