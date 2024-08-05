@@ -3,7 +3,7 @@ import MainComponent from './components/MainComponent';
 import Login from './components/Login';
 import { useState, useEffect  } from "react";
 import { AppContext } from './context/AppContext';
-
+import { Routes, Route, useLocation } from 'react-router-dom'
 const App = () => {
   console.log('in app component')
   // const [token, setToken] = useState(null);
@@ -22,7 +22,7 @@ const App = () => {
       if(!redirected){
         console.log('fghjk',code_1)
         localStorage.setItem('redirected', true);
-        window.location.href = '/';
+        // window.location.href = '/';
       }
     }
     const code = localStorage.getItem('code');
@@ -31,7 +31,11 @@ const App = () => {
     }
   // }, []);
   return (
-     <div>{code ? <MainComponent /> : <Login />}</div>
+    //  <div>{code ? <MainComponent /> : <Login />}</div>
+     <Routes>
+        <Route path='/callback?' element={<MainComponent />}/>
+        <Route path='/' element={<Login />}/>
+      </Routes>
   )
 }
 
