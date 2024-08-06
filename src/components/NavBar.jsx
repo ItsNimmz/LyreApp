@@ -70,7 +70,7 @@ const NavBar = () => {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/get-genres/${profileName}`);
+        const response = await fetch(`https://cap2-emotion-detection1.onrender.com/get-genres/${profileName}`);
         if (response.ok) {
           const data = await response.json();
           setSelectedGenres(data.genres || []);
@@ -101,7 +101,7 @@ const NavBar = () => {
 
   ///////////////for saving genre
   const saveGenres = async () => {
-    const response = await fetch('http://127.0.0.1:5000/save-genres', {
+    const response = await fetch('https://cap2-emotion-detection1.onrender.com/save-genres', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
