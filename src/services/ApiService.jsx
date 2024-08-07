@@ -229,3 +229,83 @@ export const fetchPlaylistTracks = async (accessToken, playlistId) => {
     throw error;
   }
 };
+
+//create Recommendations based on genre
+export const createSongsRecommendations = async (accessToken, genre) => {
+  const seed = genre ? 'seed_genres='+genre : '';
+
+  try {
+    const response = await fetch('https://api.spotify.com/v1/recommendations?'+seed, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok ' + response.statusText);
+    }
+
+    const data = await response.json();
+    console.log('resommonder result',data.tracks[0].album.id)
+    return data.tracks;
+  } catch (error) {
+    console.error('There was an error!', error);
+    throw error;
+  }
+};
+
+export const createPlaylist = async (accessToken) => {
+  const profileId = localStorage.getItem('profileId');
+  try {
+    const response = await fetch('https://api.spotify.com/v1/users/'+profileId+'/playlists', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: 'Auto Lyre',
+        description: 'New Playlist',
+        public: true ,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok ' + response.statusText);
+    }
+
+    const data = await response.json();
+
+    return data
+  } catch (error) {
+    console.error('There was an error!', error);
+  } throw error;
+  
+};
+
+
+export const addItemsPlaylist = async (accessToken, playlistId, trackId) => {
+  try {
+    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?uris=spotify:track:${encodeURIComponent(trackId)}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        uris: ["string"],
+        position: 0,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error('Network response was not ok ' + response.statusText);
+    }
+
+    const data = await response.json();
+    return data
+  } catch (error) {
+    console.error('There was an error!', error);
+  } throw error;
+  
+};
