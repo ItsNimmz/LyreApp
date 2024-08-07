@@ -76,6 +76,7 @@ const NavBar = () => {
         if (response.ok) {
           const data = await response.json();
           setSelectedGenres(data.genres || []);
+          localStorage.setItem('genre', data.genres || []);
         } else {
           console.error('Failed to fetch genres');
         }
@@ -114,6 +115,7 @@ const NavBar = () => {
       console.log('Genres saved successfully');
       setshowAccInfo(false)
       setIsOpen(false);
+      localStorage.setItem('genre', selectedGenres || []);
     } else {
       console.error('Failed to save genres');
     }
