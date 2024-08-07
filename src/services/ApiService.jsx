@@ -280,7 +280,8 @@ export const createPlaylist = async (accessToken) => {
     return data
   } catch (error) {
     console.error('There was an error!', error);
-  } throw error;
+    throw error;
+  } 
   
 };
 
@@ -306,6 +307,7 @@ export const addItemsPlaylist = async (accessToken, playlistId, trackId) => {
     return data
   } catch (error) {
     console.error('There was an error!', error);
-  } throw error;
+    throw error;
+  } 
   
 };
