@@ -225,7 +225,7 @@ const NavBar = () => {
             Install App
           </p>
           <p className='bg-purple-500 text-black w-7 h-7 rounded-full flex items-center justify-center cursor-pointer' onClick={toggleDropdown}>
-            A
+            {profileName.charAt(0)}
           </p>
           {isOpen && (
             <div className="profile-menu absolute right-0 mt-20">
