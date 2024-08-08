@@ -11,7 +11,6 @@ const NavBar = () => {
   const [songName, setSongName] = useState('');
   const [artistName, setArtistName] = useState('');
   const [numSongs, setNumSongs] = useState(5); // default value
-  const [scalerChoice, setScalerChoice] = useState('');
   const [recommendations, setRecommendations] = useState([]);
   const [message, setMessage] = useState('');
 
@@ -48,7 +47,7 @@ const NavBar = () => {
     formData.append('profileId', profileId);
 
     try {
-      const response = await axios.post('https://cap2-emotion-detection1.onrender.com/detect_emotion', formData, {
+      const response = await axios.post('http://127.0.0.1:5000/detect_emotion', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -137,28 +136,36 @@ const NavBar = () => {
   //Recommender form section
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const response = await fetch('https://cap2-emotion-detection1.onrender.com/recommender', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        song_name: songName,
-        artist_name: artistName,
-        num_songs_to_output: numSongs,
-        scaler_choice: 'Standard Scalar',
-        ...Object.entries(weights).map(([key, value]) => `weight_${key}=${value}`).join('&'),
-      }),
-    });
-
-    const data = await response.json();
-    setRecommendations(data.recommendations);
-    setMessage(data.message);
-    setShowModal(false);
+  
+    try {
+      const response = await fetch('http://127.0.0.1:5000/recommender', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          song_name: songName,
+          artist_name: artistName,
+          num_songs_to_output: numSongs,
+          scaler_choice: 'Standard Scalar',
+        }),
+      });
+  
+      // Check if the response is okay
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      setRecommendations(data.recommendations);
+      setMessage(data.message);
+      // setShowModal(false);
+    } catch (error) {
+      console.error('Error fetching recommendations:', error);
+      setMessage('Error fetching recommendations. Please try again later.');
+    }
   };
-
-
+  
   return (
     <>
       <div className='w-full flex justify-between items-center font-semibold'>
@@ -279,6 +286,8 @@ const NavBar = () => {
           </div>
         </div>
       </Modal>
+
+
       <Modal
         isOpen={showModal}
         onRequestClose={() => setShowModal(false)}
@@ -330,7 +339,21 @@ const NavBar = () => {
               Get Recommendations
             </button>
           </form>
-        </div>
+          {message && <p className="mt-4">{message}</p>}
+          {recommendations.length > 0 && (
+  <div className="mt-4">
+    <h3 className="text-lg mb-2">Recommendations:</h3>
+    <ul className="list-disc ml-5">
+      {recommendations.map((rec, index) => (
+        <li key={index} className="text-white">
+          <div>Name: {rec.name}</div>
+          <div>Artists: {rec.artists}</div>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+    </div>
       </Modal>
     </>
   );
