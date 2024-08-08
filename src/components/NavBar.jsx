@@ -7,6 +7,14 @@ import axios from 'axios';
 
 const NavBar = () => {
 
+  const [showModal, setShowModal] = useState(false);
+  const [songName, setSongName] = useState('');
+  const [artistName, setArtistName] = useState('');
+  const [numSongs, setNumSongs] = useState(5); // default value
+  const [scalerChoice, setScalerChoice] = useState('');
+  const [recommendations, setRecommendations] = useState([]);
+  const [message, setMessage] = useState('');
+
   //profile scrion
   const [isOpen, setIsOpen] = useState(false);
   const [showAccInfo, setshowAccInfo] = useState(false);
@@ -204,7 +212,7 @@ const NavBar = () => {
               Recommender
             </button>
 
-            {Modal && (
+            {showModal && (
               <div className="modal">
                 <div className="modal-content">
                   <span className="close" onClick={() => setShowModal(false)}>&times;</span>
@@ -241,6 +249,8 @@ const NavBar = () => {
               </div>
             )}
           </div>
+
+          
           <p className='bg-black py-1 px-3 rounded-2xl text-[15px] cursor-pointer'>
             Install App
           </p>
