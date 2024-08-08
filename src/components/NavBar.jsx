@@ -43,8 +43,8 @@ const NavBar = () => {
     const blob = await base64Response.blob();
     const formData = new FormData();
     formData.append('image', blob, 'captured_image.jpg');
-    const profileId = localStorage.getItem('profileId');
-    formData.append('profileId', profileId);
+    const profileName = localStorage.getItem('profile');
+    formData.append('profileName', profileName);
 
     try {
       const response = await axios.post('https://cap2-emotion-detection1.onrender.com/detect_emotion', formData, {
