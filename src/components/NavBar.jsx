@@ -4,8 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import Webcam from 'react-webcam';
 import Modal from 'react-modal';
 import axios from 'axios';
+import {createSongsRecommendations} from '../services/ApiService';
 
 const NavBar = () => {
+
+  const Token = localStorage.getItem('AccessToken');
 
   const [showModal, setShowModal] = useState(false);
   const [songName, setSongName] = useState('');
@@ -13,6 +16,14 @@ const NavBar = () => {
   const [numSongs, setNumSongs] = useState(5); // default value
   const [recommendations, setRecommendations] = useState([]);
   const [message, setMessage] = useState('');
+
+
+  const [selectedPlaylist, setSelectedPlaylist] = useState(null);
+  const [searchResult, setSearchResult] = useState([]);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [accessToken, setAccessToken] = useState(''); // Add your token management here
+  const [genreRecommendations, setGenreRecommendations] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(''); // Add your query management here
 
   //profile scrion
   const [isOpen, setIsOpen] = useState(false);
@@ -47,19 +58,55 @@ const NavBar = () => {
     formData.append('profileName', profileName);
 
     try {
-      const response = await axios.post('https://cap2-emotion-detection1.onrender.com/detect_emotion', formData, {
+      const response = await axios.post('http://127.0.0.1:5000/detect_emotion', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      setEmotion(response.data.emotions);
-      console.log('------You look so ', response.data.emotions[0], '---------------------------')
+      // Extract emotions from response
+      const { emotions, combined_genres } = response.data;
+      setEmotion(emotions);
+
+      // Display emotions in an alert
+      if (emotions && emotions.length > 0) {
+          alert(`Detected emotions: ${emotions.join(', ')}`);
+      } else {
+          alert('No emotions detected.');
+      }
+      
+        // Fetch recommendations based on combined genres
+        fetchRecommendations(combined_genres);
+
     } catch (error) {
       console.error('Error detecting emotion:', error);
       setEmotion('Error detecting emotion');
     }
     setIsOpened(false);
   };
+
+ // Function to display genre-based recommendations
+ const fetchRecommendations = async (genres) => {
+  if (Token) {
+      try {
+          const recommendations = [];
+          for (const genre of genres) {
+              // Fetch recommendations from Spotify based on each genre
+              const result = await createSongsRecommendations(Token, genre.toLowerCase());
+              recommendations.push(...result.tracks.items);
+          }
+
+          // Set recommendations and open modal
+          setGenreRecommendations(recommendations);
+          setModalIsOpen(true);
+      } catch (error) {
+          console.error('Error fetching recommendations:', error);
+          alert('Error fetching recommendations.');
+      }
+  } else {
+      alert('Access token is not available.');
+  }
+};
+
   const handleCancel = () => {
     setIsOpened(false);
   };
@@ -355,6 +402,17 @@ const NavBar = () => {
 )}
     </div>
       </Modal>
+      <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)}>
+    <h2>Song Recommendations</h2>
+    <ul>
+        {genreRecommendations.map(track => (
+            <li key={track.id}>
+                {track.name} by {track.artists.map(artist => artist.name).join(', ')}
+            </li>
+        ))}
+    </ul>
+    <button onClick={() => setModalIsOpen(false)}>Close</button>
+</Modal>
     </>
   );
 };
