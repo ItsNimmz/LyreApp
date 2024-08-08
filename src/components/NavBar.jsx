@@ -47,7 +47,7 @@ const NavBar = () => {
     formData.append('profileName', profileName);
 
     try {
-      const response = await axios.post('https://cap2-emotion-detection1.onrender.com/detect_emotion', formData, {
+      const response = await axios.post('http://127.0.0.1:5000/detect_emotion', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -225,7 +225,7 @@ const NavBar = () => {
             Install App
           </p>
           <p className='bg-purple-500 text-black w-7 h-7 rounded-full flex items-center justify-center cursor-pointer' onClick={toggleDropdown}>
-            {profileName.charAt(0)}
+            A
           </p>
           {isOpen && (
             <div className="profile-menu absolute right-0 mt-20">
