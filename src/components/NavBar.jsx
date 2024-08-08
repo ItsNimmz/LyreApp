@@ -147,7 +147,7 @@ const NavBar = () => {
         song_name: songName,
         artist_name: artistName,
         num_songs_to_output: numSongs,
-        scaler_choice: scalerChoice,
+        scaler_choice: 'Standard Scalar',
         ...Object.entries(weights).map(([key, value]) => `weight_${key}=${value}`).join('&'),
       }),
     });
@@ -211,43 +211,6 @@ const NavBar = () => {
             >
               Recommender
             </button>
-
-            {showModal && (
-              <div className="modal">
-                <div className="modal-content">
-                  <span className="close" onClick={() => setShowModal(false)}>&times;</span>
-                  <form onSubmit={handleSubmit}>
-                    <label>
-                      Song Name:
-                      <input type="text" value={songName} onChange={(e) => setSongName(e.target.value)} />
-                    </label>
-                    <label>
-                      Artist Name:
-                      <input type="text" value={artistName} onChange={(e) => setArtistName(e.target.value)} />
-                    </label>
-                    <label>
-                      Number of Songs:
-                      <input type="number" value={numSongs} onChange={(e) => setNumSongs(e.target.value)} />
-                    </label>
-                    <label>
-                      Scaler Choice:
-                      <input type="text" value={scalerChoice} onChange={(e) => setScalerChoice(e.target.value)} />
-                    </label>
-                    {/* Add input fields for weights if needed */}
-                    <button type="submit">Get Recommendations</button>
-                  </form>
-                  <div>
-                    <h3>Recommendations:</h3>
-                    <ul>
-                      {recommendations.map((rec, index) => (
-                        <li key={index}>{rec.name} by {rec.artists}</li>
-                      ))}
-                    </ul>
-                    {message && <p>{message}</p>}
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
           
@@ -314,6 +277,59 @@ const NavBar = () => {
               Close
             </button>
           </div>
+        </div>
+      </Modal>
+      <Modal
+        isOpen={showModal}
+        onRequestClose={() => setShowModal(false)}
+        contentLabel="Recommendation Form"
+        className="bg-black p-4 rounded-lg shadow-lg max-w-md mx-auto my-4"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center"
+        shouldCloseOnOverlayClick={true}
+      >
+        <div className="text-white">
+          <span
+            className="close absolute top-4 right-4 cursor-pointer text-2xl"
+            onClick={() => setShowModal(false)}
+          >
+            &times;
+          </span>
+          <h2 className="text-xl mb-4 text-center">Get Recommendations</h2>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+            <label className="mb-2">
+              Song Name:
+              <input
+                type="text"
+                value={songName}
+                onChange={(e) => setSongName(e.target.value)}
+                className="mt-1 p-1 ml-12 rounded text-black"
+              />
+            </label>
+            <label className="mb-2">
+              Artist Name:
+              <input
+                type="text"
+                value={artistName}
+                onChange={(e) => setArtistName(e.target.value)}
+                className="mt-1 p-1 ml-12 rounded text-black"
+              />
+            </label>
+            <label className="mb-2">
+              Number of Songs:
+              <input
+                type="number"
+                value={numSongs}
+                onChange={(e) => setNumSongs(e.target.value)}
+                className="mt-1 p-1 ml-3 rounded text-black"
+              />
+            </label>
+            <button
+              type="submit"
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+            >
+              Get Recommendations
+            </button>
+          </form>
         </div>
       </Modal>
     </>
