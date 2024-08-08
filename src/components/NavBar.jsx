@@ -47,7 +47,7 @@ const NavBar = () => {
     formData.append('profileName', profileName);
 
     try {
-      const response = await axios.post('http://127.0.0.1:5000/detect_emotion', formData, {
+      const response = await axios.post('https://cap2-emotion-detection1.onrender.com/detect_emotion', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
