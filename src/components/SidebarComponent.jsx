@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MdHomeFilled, MdSearch, MdLayers,MdArrowForward, MdAdd   } from "react-icons/md";
-import { fetchSearchResult, fetchPlaylist, fetchPlaylistTracks, createSongsRecommendations, createPlaylist, addItemsPlaylist } from '../services/ApiService';
+import { fetchSearchResult, fetchPlaylist, fetchPlaylistTracks, createSongsRecommendations, createPlaylist, addItemsPlaylist, fetchUserProfile } from '../services/ApiService';
 import { CircleLoader } from 'react-spinners';
 
 import Modal from 'react-modal';
@@ -19,6 +19,7 @@ const SidebarComponent  = () => {
 
   useEffect(() => {
     const fetchPlaylists = async() => {
+      await fetchUserProfile(accessToken);
       const trackData = await fetchPlaylist(accessToken);
       setPlaylist(trackData);
     };
