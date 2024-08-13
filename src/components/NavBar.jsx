@@ -1,11 +1,12 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { MdArrowBack, MdArrowForward, MdPhotoCamera, MdError } from "react-icons/md";
+import { MdArrowBack, MdArrowForward, MdPhotoCamera, MdError, MdMic  } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
 import Webcam from 'react-webcam';
 import Modal from 'react-modal';
 import axios from 'axios';
-import {createSongsRecommendations, fetchTrack} from '../services/ApiService';
-import { CircleLoader } from 'react-spinners';
+import {createSongsRecommendations, fetchTrack, fetchSearchResult} from '../services/ApiService';
+import { CircleLoader, SyncLoader } from 'react-spinners';
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 const NavBar = () => {
 
@@ -17,7 +18,7 @@ const NavBar = () => {
   const [numSongs, setNumSongs] = useState(5); // default value
   const [recommendations, setRecommendations] = useState([]);
   const [message, setMessage] = useState('');
-
+  const [VoiceSearchResult, setVoiceSearchResult] = useState([]);
 
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [searchResult, setSearchResult] = useState([]);
@@ -38,6 +39,10 @@ const NavBar = () => {
   // Web camera section
   const [emotion, setEmotion] = useState('');
   const [isOpened, setIsOpened] = useState(false);
+  const [voiceModal, setVoiceModal] = useState(false);
+  const [listeningState, setListening] = useState(false);
+  const { transcript, resetTranscript, listening,browserSupportsSpeechRecognition } = useSpeechRecognition();
+
   const openWebcam = () => {
     setIsOpened(true);
   }
@@ -245,7 +250,35 @@ const NavBar = () => {
       setMessage('Error fetching recommendations. Please try again later.');
     }
   };
-  
+  const startListening = async () => {
+    setListening(true);
+    if (browserSupportsSpeechRecognition) {
+      await SpeechRecognition.startListening({ continuous: true });
+    } else {
+      alert('Speech Recognition is not supported in this browser.');
+    }
+  };
+  const stopListening = async () => {
+    // setListening(false);
+    await SpeechRecognition.stopListening();
+    setModalIsOpen(false);
+    if (transcript) {
+      const query =  transcript.trim();
+      if (Token) {
+        const searchResult = await fetchSearchResult(Token, query);
+        if(searchResult){
+          setVoiceSearchResult(searchResult.tracks.items)        
+        }
+      }
+    }
+    resetTranscript(); // Clear the transcript after sending it
+  };
+  const handleVoiceOpenModal = async() => {
+    setVoiceModal(false);
+    setVoiceSearchResult([]);
+    setListening(false)
+    
+  };
   return (
     <>
       <div className='w-full flex justify-between items-center font-semibold'>
@@ -301,9 +334,13 @@ const NavBar = () => {
           </div>
 
           
-          <p className='bg-black py-1 px-3 rounded-2xl text-[15px] cursor-pointer'>
+          {/* <p className='bg-black py-1 px-3 rounded-2xl text-[15px] cursor-pointer'>
             Install App
-          </p>
+          </p> */}
+          <MdMic
+            onClick={() => setVoiceModal(true)}
+            className="text-4xl cursor-pointer text-white-700 hover:text-white-900"
+          />
           <p className='bg-purple-500 text-black w-7 h-7 rounded-full flex items-center justify-center cursor-pointer' onClick={toggleDropdown}>
             A
           </p>
@@ -486,6 +523,64 @@ const NavBar = () => {
 
       </div>
     </Modal>
+    <Modal
+        isOpen={voiceModal}
+        onRequestClose={() => setVoiceModal(false)}
+        contentLabel="Voice Recorder"
+        className="bg-black p-4 rounded-lg shadow-lg max-w-sm mx-auto my-4 border border-white"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center"
+        shouldCloseOnOverlayClick={true}
+      >
+        <div className="flex flex-col items-center">
+          {listeningState ? (
+            VoiceSearchResult.length > 0 ? (
+              <div className='flex flex-col items-center'>
+                <h2 className="text-lg font-semibold mb-6 text-center text-white">Search Results</h2>
+                <div>
+              <ul>
+                {VoiceSearchResult.map((track) => (
+                  <li key={track.id} className="mb-4 flex gap-4">
+                    <img src={track.album.images[0].url} alt={track.name} className="w-16 h-16 object-cover rounded" />
+                    <div>
+                      <p className="font-semibold text-start text-white">{track.name}</p>
+                      <p className="text-sm text-gray-400 text-start ">{track.artists.map(artist => artist.name).join(', ')}</p>
+                    </div>
+                  </li>
+                  
+                ))}
+              </ul>
+              </div>
+              <button
+                className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 text-center"
+                onClick={handleVoiceOpenModal}
+              >
+                Close
+          </button>
+              </div>
+            ) : (
+              <div className='flex flex-col items-center'>
+                <SyncLoader color="green" loading={true} size={20} />
+                <p className='text-white pt-3'>{transcript}</p>
+                <button
+                  onClick={stopListening}
+                  className="mt-5 bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600"
+                >
+                  Stop Recording
+                </button>
+              </div>
+            )
+          ) : (
+            <div>
+              <button
+                onClick={startListening}
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+              >
+                Start Recording
+              </button>
+            </div>
+          )}
+        </div>
+      </Modal>
     </>
   );
 };
