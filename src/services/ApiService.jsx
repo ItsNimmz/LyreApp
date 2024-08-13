@@ -247,7 +247,6 @@ export const createSongsRecommendations = async (accessToken, genre) => {
     }
 
     const data = await response.json();
-    console.log('resommonder result',data.tracks[0].album.id)
     return data.tracks;
   } catch (error) {
     console.error('There was an error!', error);
@@ -310,4 +309,29 @@ export const addItemsPlaylist = async (accessToken, playlistId, trackId) => {
     throw error;
   } 
   
+};
+
+export const fetchTrack = async (accessToken,id) => {
+  try {
+    const response = await fetch('https://api.spotify.com/v1/tracks/'+id, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok ' + response.statusText);
+    }
+
+    const data = await response.json();
+    const result = [];
+    // result[0]['image'] = data.album.images[0].url;
+    // result[0]['name'] = data.album.name;
+    console.log('=============>>>>>>>>>>>>>>>>>>>',data.album.images[0].url);
+    return data;
+  } catch (error) {
+    console.error('There was an error!', error);
+    throw error;
+  }
 };

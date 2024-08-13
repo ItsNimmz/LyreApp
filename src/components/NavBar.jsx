@@ -1,10 +1,11 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { MdArrowBack, MdArrowForward, MdPhotoCamera } from "react-icons/md";
+import { MdArrowBack, MdArrowForward, MdPhotoCamera, MdError } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
 import Webcam from 'react-webcam';
 import Modal from 'react-modal';
 import axios from 'axios';
-import {createSongsRecommendations} from '../services/ApiService';
+import {createSongsRecommendations, fetchTrack} from '../services/ApiService';
+import { CircleLoader } from 'react-spinners';
 
 const NavBar = () => {
 
@@ -25,6 +26,9 @@ const NavBar = () => {
   const [genreRecommendations, setGenreRecommendations] = useState([]);
   const [searchQuery, setSearchQuery] = useState(''); // Add your query management here
 
+  const [isResultOpen, setIsResultOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   //profile scrion
   const [isOpen, setIsOpen] = useState(false);
   const [showAccInfo, setshowAccInfo] = useState(false);
@@ -36,6 +40,10 @@ const NavBar = () => {
   const [isOpened, setIsOpened] = useState(false);
   const openWebcam = () => {
     setIsOpened(true);
+  }
+
+  const onClose = () => {
+    setIsResultOpen(false);
   }
   const navigate = useNavigate();
   const webcamRef = useRef(null);
@@ -56,9 +64,11 @@ const NavBar = () => {
     formData.append('image', blob, 'captured_image.jpg');
     const profileName = localStorage.getItem('profile');
     formData.append('profileName', profileName);
-
+    setIsOpened(false);
+    setIsResultOpen(true);
+    setIsLoading(true);
     try {
-      const response = await axios.post('http://127.0.0.1:5000/detect_emotion', formData, {
+      const response = await axios.post('https://cap2-emotion-detection1.onrender.com/detect_emotion', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -70,40 +80,62 @@ const NavBar = () => {
       // Display emotions in an alert
       if (emotions && emotions.length > 0) {
           alert(`Detected emotions: ${emotions.join(', ')}`);
+          setIsLoading(false);
       } else {
-          alert('No emotions detected.');
+          setErrorMessage('Something Went Wrong!')
+          setIsLoading(false);
       }
       
         // Fetch recommendations based on combined genres
-        fetchRecommendations(combined_genres);
+        const totalTrack = [];
+        for (let i = 0; i < combined_genres.length; i += 3) {
+          const batch = combined_genres.slice(i, i + 3);
+          const data = await fetchRecommendations(batch);
+          data.map(item => totalTrack.push(item));
+        }
+        const trackData = [];
+        for (let i = 0; i < totalTrack.length; i ++) {
+          const data = await fetchTrack(Token,totalTrack[i]['id'])
+          data.map(item => {
+            console.log('gh',item.album)
+            trackData[i]['image'] = item.album.images[0].url;
+            trackData[i]['name'] = item.album.name;
+          });
+        }
+        console.log('hey nimmz',trackData)
+        // setGenreRecommendations(totalTrack);
 
     } catch (error) {
       console.error('Error detecting emotion:', error);
+      setErrorMessage(error.response ? error.response.data : '');
+      setIsLoading(false);
       setEmotion('Error detecting emotion');
     }
-    setIsOpened(false);
   };
 
  // Function to display genre-based recommendations
  const fetchRecommendations = async (genres) => {
   if (Token) {
       try {
-          const recommendations = [];
-          for (const genre of genres) {
-              // Fetch recommendations from Spotify based on each genre
-              const result = await createSongsRecommendations(Token, genre.toLowerCase());
-              recommendations.push(...result.tracks.items);
-          }
+          const genresString = genres.join(',');
+          const result = await createSongsRecommendations(Token, genresString.toLowerCase());
 
+          const recommendations = result.map((track, index) => {
+            if(index < 5) {
+              return {
+                id: track.id
+              }
+            }
+          })
           // Set recommendations and open modal
-          setGenreRecommendations(recommendations);
-          setModalIsOpen(true);
+          return recommendations;
+          // setGenreRecommendations(recommendations);
+          // setModalIsOpen(true);
       } catch (error) {
-          console.error('Error fetching recommendations:', error);
-          alert('Error fetching recommendations.');
+          console.log('Error fetching recommendations:', error);
       }
   } else {
-      alert('Access token is not available.');
+      console.log('Access token is not available.');
   }
 };
 
@@ -204,6 +236,7 @@ const NavBar = () => {
       }
   
       const data = await response.json();
+      console.log('==============================',data)
       setRecommendations(data.recommendations);
       setMessage(data.message);
       // setShowModal(false);
@@ -261,7 +294,7 @@ const NavBar = () => {
           <div>
             <button
               onClick={() => setShowModal(true)}
-              className='bg-black px-4 py-1 rounded-2xl text-white cursor-pointer'
+              className='bg-white px-4 py-1 rounded-2xl text-black cursor-pointer'
             >
               Recommender
             </button>
@@ -339,17 +372,12 @@ const NavBar = () => {
         isOpen={showModal}
         onRequestClose={() => setShowModal(false)}
         contentLabel="Recommendation Form"
-        className="bg-black p-4 rounded-lg shadow-lg max-w-md mx-auto my-4"
+        className="bg-black p-4 rounded-lg shadow-lg max-w-md mx-auto my-4 border border-white"
         overlayClassName="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center"
         shouldCloseOnOverlayClick={true}
       >
+        {recommendations.length === 0 && (
         <div className="text-white">
-          <span
-            className="close absolute top-4 right-4 cursor-pointer text-2xl"
-            onClick={() => setShowModal(false)}
-          >
-            &times;
-          </span>
           <h2 className="text-xl mb-4 text-center">Get Recommendations</h2>
           <form onSubmit={handleSubmit} className="flex flex-col gap-8">
             <label className="mb-2">
@@ -386,33 +414,78 @@ const NavBar = () => {
               Get Recommendations
             </button>
           </form>
+          </div>
+          )}
           {message && <p className="mt-4">{message}</p>}
           {recommendations.length > 0 && (
-  <div className="mt-4">
-    <h3 className="text-lg mb-2">Recommendations:</h3>
-    <ul className="list-disc ml-5">
-      {recommendations.map((rec, index) => (
-        <li key={index} className="text-white">
-          <div>Name: {rec.name}</div>
-          <div>Artists: {rec.artists}</div>
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
-    </div>
+            <div className="mt-2 overflow-y-auto max-h-[65vh]">
+              <h1 className="text-2xl font-bold mb-6 text-center text-white">Recommendations</h1>
+              <ul className="list-disc ml-5">
+                {recommendations.map((rec, index) => (
+                  <li key={index} className="mb-4 flex gap-4">
+                    <img src={'/rec.png'} alt={'image'} className="w-16 h-16 object-cover rounded" />
+                    <div>
+                      <p className="font-semibold text-start text-white">{rec.name}</p>
+                      <p className="text-sm text-gray-400 text-start">{rec.artists}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <div className="flex justify-center">
+                <button
+                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                  onClick={() => {
+                    setShowModal(false);
+                    setRecommendations([]);
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+
+            </div>
+        )}
       </Modal>
       <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)}>
     <h2>Song Recommendations</h2>
     <ul>
         {genreRecommendations.map(track => (
             <li key={track.id}>
-                {track.name} by {track.artists.map(artist => artist.name).join(', ')}
+                {track.name} by {track.artist}
             </li>
         ))}
     </ul>
     <button onClick={() => setModalIsOpen(false)}>Close</button>
 </Modal>
+<Modal
+      isOpen={isResultOpen}
+      onRequestClose={onClose}
+      contentLabel="Webcam Modal"
+      className="bg-black p-3 rounded-lg shadow-lg max-w-2xl mx-auto my-8 border-white"
+      overlayClassName="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center border-white"
+>
+      <div className="modal-content border-white">
+        {isLoading ? (
+          <div className="flex flex-col items-center">
+            <CircleLoader color="green" loading={isLoading} size={50} />
+            <p className="mt-4 text-white">Processing...</p>
+          </div>
+        ) : errorMessage ? (
+          <div className="flex flex-col items-center justify-center text-center p-6 rounded">
+            <MdError size={30} color="red" />
+            <h1 className="text-red-500 text-xl font-bold mb-4">Error</h1>
+            <p className='text-white'>{errorMessage}</p>
+            <button
+            onClick={onClose}
+            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-60 mt-5"
+          >
+            Close
+        </button>
+          </div>
+        ) : null}
+
+      </div>
+    </Modal>
     </>
   );
 };
