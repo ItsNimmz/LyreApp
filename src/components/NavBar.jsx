@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { MdArrowBack, MdArrowForward, MdPhotoCamera, MdError, MdMic  } from "react-icons/md";
+import { MdArrowBack, MdArrowForward, MdPhotoCamera, MdError, MdMic, MdEmojiEmotions, MdSentimentNeutral, MdSentimentDissatisfied, MdSentimentVeryDissatisfied  } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
 import Webcam from 'react-webcam';
 import Modal from 'react-modal';
@@ -7,6 +7,8 @@ import axios from 'axios';
 import {createSongsRecommendations, fetchTrack, fetchSearchResult} from '../services/ApiService';
 import { CircleLoader, SyncLoader } from 'react-spinners';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import Swal from 'sweetalert2';
+
 
 const NavBar = () => {
 
@@ -279,6 +281,46 @@ const NavBar = () => {
     setListening(false)
     
   };
+  const [openFeedback, setOpenFeedback] = useState(false);
+  const [activeIcon, setActiveIcon] = useState(null); 
+  const handleIconClick = (iconName) => {
+    setActiveIcon(iconName);
+  };
+  const closeFeedback = () => {
+    setOpenFeedback(false);
+    setActiveIcon(null)
+  };
+
+  const handleFeedSubmit = async () => {
+    if (activeIcon) {
+      try {
+        const response = await fetch('https://cap2-emotion-detection1.onrender.com/save-feedback', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username: profileName, feedback: activeIcon }),
+        });
+        console.log('Feedback submitted!');
+      } catch (error) {
+        console.error('Error submitting feedback:', error);
+        console.log('Error submitting feedback.');
+      }
+      closeFeedback();
+      Swal.fire({
+        title: 'Thank you!',
+        text: 'Thanks for your feedback!',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        customClass: {
+          popup: 'bg-black bg-opacity-90 text-white p-3 max-w-xs',
+          confirmButton: 'bg-green-500 hover:bg-green-600 focus:ring-green-300',
+        },
+      });
+    } else {
+      alert('Please select an emotion.');
+    }
+  };
   return (
     <>
       <div className='w-full flex justify-between items-center font-semibold'>
@@ -333,7 +375,6 @@ const NavBar = () => {
             </button>
           </div>
 
-          
           {/* <p className='bg-black py-1 px-3 rounded-2xl text-[15px] cursor-pointer'>
             Install App
           </p> */}
@@ -474,6 +515,9 @@ const NavBar = () => {
                   onClick={() => {
                     setShowModal(false);
                     setRecommendations([]);
+                    setTimeout(() => {
+                      setOpenFeedback(true);
+                    }, 2000);
                   }}
                 >
                   Close
@@ -579,6 +623,49 @@ const NavBar = () => {
               </button>
             </div>
           )}
+        </div>
+      </Modal>
+      <Modal
+        isOpen={openFeedback}
+        onRequestClose={closeFeedback}
+        contentLabel="Webcam Modal"
+        className="bg-black p-4 rounded-lg shadow-lg max-w-md mx-auto my-4"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center"
+      >
+        <h1 className='text-white items-center mb-7 text-lg font-semibold flex justify-center'>Rate Your Experience</h1>
+        <div className="flex gap-8">
+        <MdEmojiEmotions
+          size={55}
+          color={activeIcon === 'happy' ? 'green' : 'gray'}
+          onClick={() => handleIconClick('happy')}
+          className={`cursor-pointer ${activeIcon === 'happy' ? 'scale-110' : ''}`} // Add a scaling effect when active
+        />
+          <MdSentimentNeutral
+          size={55}
+          color={activeIcon === 'neutral' ? 'white' : 'gray'}
+          onClick={() => handleIconClick('neutral')}
+          className={`cursor-pointer ${activeIcon === 'neutral' ? 'scale-110' : ''}`}
+        />
+        <MdSentimentDissatisfied
+          size={55}
+          color={activeIcon === 'sad' ? 'red' : 'gray'}
+          onClick={() => handleIconClick('sad')}
+          className={`cursor-pointer ${activeIcon === 'sad' ? 'scale-110' : ''}`}
+        />
+        <MdSentimentVeryDissatisfied
+          size={55}
+          color={activeIcon === 'verySad' ? 'darkred' : 'gray'}
+          onClick={() => handleIconClick('verySad')}
+          className={`cursor-pointer ${activeIcon === 'verySad' ? 'scale-110' : ''}`}
+        />
+        </div>
+        <div className="flex justify-center gap-7 mt-7 items-center">
+        <button onClick={handleFeedSubmit} className="bg-green-500 text-white px-1 py-1 rounded hover:bg-green-600">
+          Submit
+        </button>
+        <button onClick={closeFeedback} className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
+          Close
+        </button>
         </div>
       </Modal>
     </>
