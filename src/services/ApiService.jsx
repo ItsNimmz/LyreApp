@@ -325,11 +325,7 @@ export const fetchTrack = async (accessToken,id) => {
     }
 
     const data = await response.json();
-    const result = [];
-    // result[0]['image'] = data.album.images[0].url;
-    // result[0]['name'] = data.album.name;
-    console.log('=============>>>>>>>>>>>>>>>>>>>',data.album.images[0].url);
-    return data;
+    return data.album;
   } catch (error) {
     console.error('There was an error!', error);
     throw error;

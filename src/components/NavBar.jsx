@@ -74,8 +74,9 @@ const NavBar = () => {
     setIsOpened(false);
     setIsResultOpen(true);
     setIsLoading(true);
+    setErrorMessage(null);
     try {
-      const response = await axios.post('https://cap2-emotion-detection1.onrender.com/detect_emotion', formData, {
+      const response = await axios.post('http://127.0.0.1:4000/detect_emotion', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -86,31 +87,33 @@ const NavBar = () => {
 
       // Display emotions in an alert
       if (emotions && emotions.length > 0) {
-          alert(`Detected emotions: ${emotions.join(', ')}`);
+          // alert(`Detected emotions: ${emotions.join(', ')}`);
           setIsLoading(false);
+          // Fetch recommendations based on combined genres
+          const totalTrack = [];
+          for (let i = 0; i < combined_genres.length; i += 30) {
+            const batch = combined_genres.slice(i, i + 3);
+            const data = await fetchRecommendations(batch);
+            data.map(item => totalTrack.push(item));
+          }
+          const trackData = [];
+          for (let i = 0; i < totalTrack.length; i ++) {
+            const data = await fetchTrack(Token, totalTrack[i]['id']);
+            trackData[i] = {  
+              image: data.images[0].url,
+              name: data.name,
+            };
+            if (i == 4) {  // Exit after the 5th iteration (index 4 is the 5th iteration)
+              break;
+            }
+          }
+          setModalIsOpen(true)
+          setGenreRecommendations(trackData);
       } else {
+        console.log('------------------->>>>>>>>>>>>>>>>')
           setErrorMessage('Something Went Wrong!')
           setIsLoading(false);
       }
-      
-        // Fetch recommendations based on combined genres
-        const totalTrack = [];
-        for (let i = 0; i < combined_genres.length; i += 3) {
-          const batch = combined_genres.slice(i, i + 3);
-          const data = await fetchRecommendations(batch);
-          data.map(item => totalTrack.push(item));
-        }
-        const trackData = [];
-        for (let i = 0; i < totalTrack.length; i ++) {
-          const data = await fetchTrack(Token,totalTrack[i]['id'])
-          data.map(item => {
-            console.log('gh',item.album)
-            trackData[i]['image'] = item.album.images[0].url;
-            trackData[i]['name'] = item.album.name;
-          });
-        }
-        console.log('hey nimmz',trackData)
-        // setGenreRecommendations(totalTrack);
 
     } catch (error) {
       console.error('Error detecting emotion:', error);
@@ -243,7 +246,6 @@ const NavBar = () => {
       }
   
       const data = await response.json();
-      console.log('==============================',data)
       setRecommendations(data.recommendations);
       setMessage(data.message);
       // setShowModal(false);
@@ -527,18 +529,33 @@ const NavBar = () => {
             </div>
         )}
       </Modal>
-      <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)}>
-    <h2>Song Recommendations</h2>
-    <ul>
-        {genreRecommendations.map(track => (
-            <li key={track.id}>
-                {track.name} by {track.artist}
-            </li>
-        ))}
-    </ul>
-    <button onClick={() => setModalIsOpen(false)}>Close</button>
-</Modal>
-<Modal
+          <Modal
+           isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)}
+           contentLabel="Playlist Tracks" 
+           className="bg-black p-6 rounded-lg shadow-lg max-w-4xl mx-auto my-8 w-[30%] "
+          overlayClassName="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center"
+           >
+             <div className="text-white text-center max-h-[65vh] overflow-y-auto ">
+              <h2 className="text-lg font-semibold mb-6 text-center">Tracks For You</h2>
+                <ul>
+                {genreRecommendations.map((track, index) => (
+                  <li key={index} className="mb-4 flex gap-4">
+                    <img src={track.image} alt={track.name} className="w-16 h-16 object-cover rounded" />
+                    <p className="font-semibold text-start">{track.name}</p>
+                  </li>
+                    ))}
+                </ul>
+                <button
+            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 text-center"
+            onClick={() => {
+              setModalIsOpen(false);
+            }}
+          >
+            Close
+          </button>
+            </div>
+        </Modal>
+    <Modal
       isOpen={isResultOpen}
       onRequestClose={onClose}
       contentLabel="Webcam Modal"
