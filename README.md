@@ -49,12 +49,12 @@ Lyre is a cloud-hosted music recommendation web application that analyzes user p
 
    ```bash
    cd client
-    npm install 
+   npm install 
 
 3. **Backend Setup**:
    ```bash
    cd backend
-    pip install -r requirements.txt
+   pip install -r requirements.txt
 
 4. **Database Setup**:\
   Set up a MySQL database and import the schema 
@@ -64,12 +64,12 @@ Lyre is a cloud-hosted music recommendation web application that analyzes user p
 1. **Frontend**:
    ```bash
    cd client
-    npm start
+   npm start
 
 2. **Backend**:
    ```bash
    cd backend
-    python app.py
+   python app.py
 
 3. **Access the App**:
     Navigate to https://lyreapp.onrender.com/ in your browser
