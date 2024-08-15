@@ -42,22 +42,14 @@ Lyre is a cloud-hosted music recommendation web application that analyzes user p
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/lyre-music-recommendation.git
-   cd lyre-music-recommendation
+   git clone https://github.com/ItsNimmz/LyreApp.git
+   cd LyreApp
 
 2. **Frontend Setup**:
 
    ```bash
    cd client
    npm install 
-
-3. **Backend Setup**:
-   ```bash
-   cd backend
-   pip install -r requirements.txt
-
-4. **Database Setup**:\
-  Set up a MySQL database and import the schema 
 
 ## Running the Application
 
@@ -76,9 +68,9 @@ Lyre is a cloud-hosted music recommendation web application that analyzes user p
 
 ## Deployment
 
-The application is deployed on Render.com, offering full cloud integration for seamless music recommendation and playlist generation. Follow these steps to deploy your own version:\
-1. Set up a Render.com account and create a new web service.\
-2. Link the repository and set the necessary environment variables (API keys, database credentials, etc.).\
+The application is deployed on Render.com, offering full cloud integration for seamless music recommendation and playlist generation. Follow these steps to deploy your own version:
+1. Set up a Render.com account and create a new web service.
+2. Link the repository and set the necessary environment variables (API keys, database credentials, etc.).
 3. Deploy the frontend and backend services.
 
 ## Usage
