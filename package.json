@@ -20,7 +20,8 @@
     "react-speech-recognition": "^3.10.0",
     "react-spinners": "^0.14.1",
     "react-webcam": "^7.2.0",
-    "regenerator-runtime": "^0.14.1"
+    "regenerator-runtime": "^0.14.1",
+    "sweetalert2": "^11.12.4"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
