@@ -84,8 +84,6 @@ The application is deployed on Render.com, offering full cloud integration for s
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-```
 
-This `README.md` provides a comprehensive overview of the Lyre Music Recommendation App, detailing its features, project structure, technologies used, installation instructions, deployment process, and usage guidelines.
 
 
