@@ -80,9 +80,6 @@ The application is deployed on Render.com, offering full cloud integration for s
 - **Playlists**: Generate and manage custom playlists based on your favorite genres.
 - **Recommendations**: Get real-time recommendations based on your listening habits.
 
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 
 
